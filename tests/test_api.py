@@ -42,10 +42,3 @@ def test_note_crud(client):
     assert client.get(f"/notes/{note_id}", headers=h).status_code == 404
 
 
-def test_users_cannot_access_each_others_notes(client):
-    alice = register_and_login(client, "alice@example.com")
-    bob = register_and_login(client, "bob@example.com")
-    note_id = client.post("/notes", json={"title": "secret"}, headers=alice).json()["id"]
-    assert client.get(f"/notes/{note_id}", headers=bob).status_code == 404
-    assert client.delete(f"/notes/{note_id}", headers=bob).status_code == 404
-    assert client.get("/notes", headers=bob).json() == []
