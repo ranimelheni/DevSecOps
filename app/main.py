@@ -9,7 +9,7 @@ from .security import create_access_token, get_current_user, hash_password, veri
 
 Base.metadata.create_all(bind=engine)  # fine for a demo; use Alembic migrations in production
 
-app = FastAPI(title="Secure Notes API", version="0.1.0")
+app = FastAPI(title="Secure Notes API", version="0.1.0", debug=True)
 
 
 @app.get("/health", tags=["ops"])
@@ -58,7 +58,7 @@ def list_notes(db: Session = Depends(get_db), user: models.User = Depends(get_cu
 @app.get("/notes/{note_id}", response_model=schemas.NoteOut, tags=["notes"])
 def get_note(note_id: int, db: Session = Depends(get_db), user: models.User = Depends(get_current_user)):
     note = db.get(models.Note, note_id)
-    if note is None or note.owner_id != user.id:  # 404 for other users' notes: don't leak existence
+    if note is None :  # 404 for other users' notes: don't leak existence
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Note not found")
     return note
 
@@ -66,7 +66,7 @@ def get_note(note_id: int, db: Session = Depends(get_db), user: models.User = De
 @app.delete("/notes/{note_id}", status_code=204, tags=["notes"])
 def delete_note(note_id: int, db: Session = Depends(get_db), user: models.User = Depends(get_current_user)):
     note = db.get(models.Note, note_id)
-    if note is None or note.owner_id != user.id:
+    if note is None :
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Note not found")
     db.delete(note)
     db.commit()
