@@ -1,0 +1,11 @@
+rules:
+  - id: fastapi-debug-enabled
+    languages: [python]
+    severity: ERROR
+    message: >-
+      FastAPI(debug=True) active les traces détaillées en cas d'erreur.
+      Interdit en dehors du développement local.
+    pattern: FastAPI(..., debug=True, ...)
+    metadata:
+      category: security
+      cwe: "CWE-489: Active Debug Code"
